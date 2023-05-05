@@ -42,30 +42,34 @@ class AuthController extends Controller
 }
 
 public function login(Request $request)
-    {
-        $request->validate([
-            'phone_number' => ['required'],
-            'password' => ['required'],
-        ]);
+{
+    $request->validate([
+        'phone_number' => ['required'],
+        'password' => ['required'],
+    ]);
 
-        $credentials = $request->only('phone_number', 'password');
-        if (Auth::attempt($credentials)) {
-            $user = Auth::user();
-            $token = JWTAuth::fromUser($user);
-
-            // Reset the login attempts for the user
-            RateLimiter::clear($this->throttleKey($request));
-
-            // Update the user's last login timestamp
-            $user->last_login_at = now();
-            $user->save();
-
-            return response()->json([
-                'token' => $token,
-                'user' => $user,
-            ]);
-        }
+    $credentials = $request->only('phone_number', 'password');
+    if (!Auth::attempt($credentials)) {
+        return response()->json([
+            'message' => 'Invalid credentials',
+        ], 401);
     }
+
+    $user = Auth::user();
+    $token = JWTAuth::fromUser($user);
+
+    // Reset the login attempts for the user
+    RateLimiter::clear($this->throttleKey($request));
+
+    // Update the user's last login timestamp
+    $user->last_login_at = now();
+    $user->save();
+
+    return response()->json([
+        'token' => $token,
+        'user' => $user,
+    ]);
+}
 
     protected function throttleKey(Request $request)
 {
@@ -120,7 +124,7 @@ public function verifyOtp(Request $request)
 
     // Reset the OTP for the user
     Cache::forget($this->otpKey($request));
-    $user = User::where('phone_number','+'.$request->phone_number)->first();
+    $user = User::where('phone_number',$request->phone_number)->first();
 
     // Create or retrieve the user based on the phone number
     $user->mobile_verified_at = Carbon::now();
