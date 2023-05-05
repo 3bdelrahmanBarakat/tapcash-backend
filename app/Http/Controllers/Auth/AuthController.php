@@ -23,7 +23,7 @@ class AuthController extends Controller
 {
     $request->validate([
         'phone_number' => ['required', 'unique:users'],
-        'password' => ['required', 'min:8' ,'confirmed'],
+        'password' => ['required', 'min:8'],
         'first_name' => ['required'],
         'last_name' => ['required'],
     ]);
