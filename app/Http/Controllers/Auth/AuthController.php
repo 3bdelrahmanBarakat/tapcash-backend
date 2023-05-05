@@ -26,7 +26,6 @@ class AuthController extends Controller
         'password' => ['required', 'min:8' ,'confirmed'],
         'first_name' => ['required'],
         'last_name' => ['required'],
-        'address' => ['required'],
     ]);
 
     $user = User::create([
@@ -34,7 +33,6 @@ class AuthController extends Controller
         'password' => $request->password,
         'first_name' => $request->first_name,
         'last_name' => $request->last_name,
-        'address' => $request->address,
     ]);
 
     return response()->json([
