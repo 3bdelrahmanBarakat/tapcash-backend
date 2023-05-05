@@ -26,5 +26,6 @@ Route::post('login', [AuthController::class, 'login']);
 Route::post('logout', [AuthController::class, 'logout']);
 Route::post('send-otp', [AuthController::class, 'sendOtp'])->middleware('throttle:3,1');
 Route::post('verify-otp', [AuthController::class, 'verifyOtp']);
+Route::post('save-pincode', [AuthController::class, 'savePinCode']);
 // Route::post('login', [LoginController::class, 'login'])->middleware('guest');
 // Route::post('logout', [LoginController::class, 'logout'])->middleware('auth:api');

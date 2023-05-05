@@ -36,9 +36,30 @@ class AuthController extends Controller
     ]);
 
     return response()->json([
+        'status' => True,
         'message' => 'User registered successfully.',
-        'user' => $user,
+        'data' =>[
+            'user' => $user,
+        ]
     ], 201);
+}
+
+public function savePinCode(Request $request)
+{
+    $request->validate([
+        'pin_code' => ['required', 'digits:5'],
+        'user_id' => 'required',
+    ]);
+
+    $user = User::findOrFail($request->user_id);
+    $user->pin_code = bcrypt($request->input('pin_code'));
+    $user->save();
+
+    return response()->json([
+        'status' => True,
+        'message' => 'Pin code saved successfully',
+        'data' => null
+    ]);
 }
 
 public function login(Request $request)
@@ -46,29 +67,46 @@ public function login(Request $request)
     $request->validate([
         'phone_number' => ['required'],
         'password' => ['required'],
+        'pin_code' => ['required', 'digits:5'],
     ]);
 
     $credentials = $request->only('phone_number', 'password');
     if (!Auth::attempt($credentials)) {
+        // Increase the login attempts for the user
+        RateLimiter::hit($this->throttleKey($request), 1);
+
         return response()->json([
-            'message' => 'Invalid credentials',
+            'status' => false,
+            'message' => 'Invalid phone number or password',
+            'data' => null
         ], 401);
     }
 
     $user = Auth::user();
-    $token = JWTAuth::fromUser($user);
+    if (!password_verify($request->input('pin_code'), $user->pin_code)) {
+        // Increase the login attempts for the user
+        RateLimiter::hit($this->throttleKey($request), 1);
+
+        return response()->json([
+            'status' => false,
+            'message' => 'Invalid pin code',
+            'data' => null
+        ], 401);
+    }
 
     // Reset the login attempts for the user
     RateLimiter::clear($this->throttleKey($request));
 
-    // Update the user's last login timestamp
-    $user->last_login_at = now();
-    $user->save();
+    $token = JWTAuth::fromUser($user);
 
     return response()->json([
-        'token' => $token,
-        'user' => $user,
-    ]);
+        'status' => True,
+        'message' => 'User successfully logged in',
+        'data' => [
+            'token' => $token,
+             'user' => $user,
+        ]
+    ],200);
 }
 
     protected function throttleKey(Request $request)
@@ -81,7 +119,9 @@ public function logout(Request $request)
     Auth::logout();
 
     return response()->json([
+        'status' => True,
         'message' => 'User logged out successfully.',
+        'data' => null
     ]);
 }
 
