@@ -77,6 +77,11 @@ public function savePinCode(Request $request)
     ],201);
 }
 
+protected function incrementLoginAttempts(Request $request)
+    {
+        $this->incrementLoginAttempts($request);
+    }
+
 public function login(Request $request)
 {
     // $request->validate([
@@ -176,13 +181,13 @@ public function login(Request $request)
 
         ]);
     } else {
-        $this->incrementLoginAttempts($request);
         return response()->json([
             'status' => false,
             'message' => 'Invalid phone number or password',
             'data' =>[null,
-        'errors' => True
-        ]
+            'errors' => True
+            ]
+
         ], 401);
     }
 }
