@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Exceptions;
-
+use Illuminate\Validation\ValidationException;
+use Illuminate\Http\Exceptions\HttpResponseException;
+use Illuminate\Support\MessageBag;
 use Illuminate\Foundation\Exceptions\Handler as ExceptionHandler;
 use Throwable;
 
@@ -26,5 +28,11 @@ class Handler extends ExceptionHandler
         $this->reportable(function (Throwable $e) {
             //
         });
+    }
+
+    protected function invalidJson($request, ValidationException $exception)
+    {
+        $errors = new MessageBag(['errors' => $exception->errors()]);
+        throw new HttpResponseException(response()->json(['message' => 'The given data was invalid.', 'data' => $errors], 422));
     }
 }

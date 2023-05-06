@@ -41,8 +41,8 @@ class AuthController extends Controller
         'message' => 'User registered successfully.',
         'data' =>[
             'user' => $user,
+            'errors' => null
         ],
-        'errors' => null
     ], 201);
 }
 
@@ -60,8 +60,9 @@ public function savePinCode(Request $request)
         return response()->json([
             'status' => false,
             'message' => 'You already set your pin',
-            'data' => null,
-            'errors' => true
+            'data' =>[null,
+        'errors' => True
+        ]
         ]);
     }
     $user->pin_code = bcrypt($request->input('pin_code'));
@@ -70,8 +71,9 @@ public function savePinCode(Request $request)
     return response()->json([
         'status' => True,
         'message' => 'Pin code saved successfully',
-        'data' => null,
-        'errors'=>null
+        'data' =>[null,
+        'errors' => null
+        ]
     ],201);
 }
 
@@ -137,8 +139,9 @@ public function login(Request $request)
             return response()->json([
                 'status' => false,
                 'message' => 'Mobile number not verified',
-                'data' => null,
-                'errors' => True,
+                'data' =>[null,
+        'errors' => True
+        ]
             ], 401);
         }
 
@@ -146,8 +149,9 @@ public function login(Request $request)
                 return response()->json([
                     'status' => false,
                     'message' => 'You should set your pin',
-                    'data' => null,
-                    'errors' => True,
+                    'data' =>[null,
+                    'errors' => True
+        ]
                 ], 401);
 
         }
@@ -167,17 +171,18 @@ public function login(Request $request)
             'data' => [
                 'token' => $token,
                  'user' => $user,
+                 'errors' => null,
             ],
-            'errors' => null,
 
         ]);
     } else {
         $this->incrementLoginAttempts($request);
         return response()->json([
             'status' => false,
-            'data' => null,
             'message' => 'Invalid phone number or password',
-            'errors' => True,
+            'data' =>[null,
+        'errors' => True
+        ]
         ], 401);
     }
 }
@@ -201,8 +206,8 @@ public function loginByPin(Request $request)
             'data' => [
                 'token' => JWTAuth::fromUser($user),
                 'user' => $user,
+                'errors' => null
             ],
-            'errors' => null
         ]);
     } else {
         // Increment the login attempts for the user
@@ -211,8 +216,9 @@ public function loginByPin(Request $request)
         return response()->json([
             'status' => false,
             'message' => 'Invalid pin code.',
-            'data' =>null,
-            'errors' => True
+            'data' =>[null,
+        'errors' => True
+        ]
         ], 422);
     }
 }
@@ -229,15 +235,16 @@ public function logout(Request $request)
     return response()->json([
         'status' => True,
         'message' => 'User logged out successfully.',
-        'data' => null,
+        'data' =>[null,
         'errors' => null
+        ]
     ]);
 }
 
 public function sendOtp(Request $request)
 {
 $request->validate([
-'phone_number' => ['required'],
+'phone_number' => ['required',  'min:13', 'max:13'],
 ]);
 $otp = Str::random(6);
     $message = "Your verification code is: {$otp}";
@@ -288,8 +295,8 @@ public function verifyOtp(Request $request)
         'data' => [
             'token' => $token,
             'user' => $user,
+            'errors' => null
         ],
-        'errors' => null
     ]);
 }
 
