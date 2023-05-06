@@ -30,9 +30,9 @@ class Handler extends ExceptionHandler
         });
     }
 
-    protected function invalidJson($request, ValidationException $exception)
-    {
-        $errors = new MessageBag(['errors' => $exception->errors()]);
-        throw new HttpResponseException(response()->json(['message' => 'The given data was invalid.', 'data' => $errors], 422));
-    }
+    // protected function invalidJson($request, ValidationException $exception)
+    // {
+    //     $errors = new MessageBag(['errors' => $exception->errors()]);
+    //     throw new HttpResponseException(response()->json(['message' => 'The given data was invalid.', 'data' => $errors], 422));
+    // }
 }

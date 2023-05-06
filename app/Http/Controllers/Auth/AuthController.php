@@ -143,6 +143,7 @@ public function login(Request $request)
         'password' => ['required', 'min:4'],
     ]);
 
+
     $credentials = $request->only('phone_number', 'password');
     if (Auth::attempt($credentials)) {
         $user = Auth::user();
@@ -161,10 +162,9 @@ public function login(Request $request)
                 return response()->json([
                     'status' => false,
                     'message' => 'You should set your pin',
-                    'data' =>[null,
+                    'data' =>null,
                     'errors' => True
-        ]
-                ], 401);
+        ], 401);
 
         }
 
