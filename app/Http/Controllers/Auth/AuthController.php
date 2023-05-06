@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Models\Balance;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,10 @@ class AuthController extends Controller
         'last_name' => $request->last_name,
     ]);
 
+    $balance = Balance::create([
+
+    ]);
+
     return response()->json([
         'status' => True,
         'message' => 'User registered successfully.',
@@ -49,7 +54,7 @@ class AuthController extends Controller
 public function savePinCode(Request $request)
 {
     $request->validate([
-        'pin_code' => ['required', 'digits:5' ,'numeric'],
+        'pin_code' => ['required', 'digits:6' ,'numeric'],
         'user_id' => 'required',
     ]);
 
@@ -145,8 +150,8 @@ public function login(Request $request)
                 'status' => false,
                 'message' => 'Mobile number not verified',
                 'data' =>[null,
-        'errors' => True
-        ]
+                'errors' => True
+            ],
             ], 401);
         }
 
@@ -184,7 +189,8 @@ public function login(Request $request)
         return response()->json([
             'status' => false,
             'message' => 'Invalid phone number or password',
-            'data' =>[null,
+            'data' =>[
+                null,
             'errors' => True
             ]
 
