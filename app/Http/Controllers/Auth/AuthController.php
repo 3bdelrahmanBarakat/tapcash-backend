@@ -37,8 +37,9 @@ class AuthController extends Controller
         'last_name' => $request->last_name,
     ]);
 
-    $balance = Balance::create([
 
+    $balance = Balance::create([
+        'user_id' => $user->id,
     ]);
 
     return response()->json([
@@ -46,6 +47,7 @@ class AuthController extends Controller
         'message' => 'User registered successfully.',
         'data' =>[
             'user' => $user,
+            'balance' => $balance,
             'errors' => null
         ],
     ], 201);
@@ -137,8 +139,8 @@ public function login(Request $request)
 
 
     $request->validate([
-        'phone_number' => ['required'],
-        'password' => ['required'],
+        'phone_number' => ['required', 'min:13'],
+        'password' => ['required', 'min:4'],
     ]);
 
     $credentials = $request->only('phone_number', 'password');
