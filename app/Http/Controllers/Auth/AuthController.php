@@ -9,6 +9,7 @@ use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
@@ -22,10 +23,10 @@ class AuthController extends Controller
     public function register(Request $request)
 {
     $request->validate([
-        'phone_number' => ['required', 'unique:users'],
-        'password' => ['required', 'min:8'],
-        'first_name' => ['required'],
-        'last_name' => ['required'],
+        'phone_number' => ['required', 'unique:users' , 'min:13', 'max:13'],
+        'password' => ['required', 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9])/'],
+        'first_name' => ['required','string'],
+        'last_name' => ['required','string'],
     ]);
 
     $user = User::create([
@@ -40,73 +41,180 @@ class AuthController extends Controller
         'message' => 'User registered successfully.',
         'data' =>[
             'user' => $user,
-        ]
+        ],
+        'errors' => null
     ], 201);
 }
 
 public function savePinCode(Request $request)
 {
     $request->validate([
-        'pin_code' => ['required', 'digits:5'],
+        'pin_code' => ['required', 'digits:5' ,'numeric'],
         'user_id' => 'required',
     ]);
 
+
     $user = User::findOrFail($request->user_id);
+    if($user->pin_code)
+    {
+        return response()->json([
+            'status' => false,
+            'message' => 'You already set your pin',
+            'data' => null,
+            'errors' => true
+        ]);
+    }
     $user->pin_code = bcrypt($request->input('pin_code'));
     $user->save();
 
     return response()->json([
         'status' => True,
         'message' => 'Pin code saved successfully',
-        'data' => null
-    ]);
+        'data' => null,
+        'errors'=>null
+    ],201);
 }
 
 public function login(Request $request)
 {
+    // $request->validate([
+    //     'phone_number' => ['required'],
+    //     'password' => ['required'],
+    //     'pin_code' => ['required', 'digits:5'],
+    // ]);
+
+    // $credentials = $request->only('phone_number', 'password');
+    // if (!Auth::attempt($credentials)) {
+    //     // Increase the login attempts for the user
+    //     RateLimiter::hit($this->throttleKey($request), 1);
+
+    //     return response()->json([
+    //         'status' => false,
+    //         'message' => 'Invalid phone number or password',
+    //         'data' => null
+    //     ], 401);
+    // }
+
+    // $user = Auth::user();
+    // if (!password_verify($request->input('pin_code'), $user->pin_code)) {
+    //     // Increase the login attempts for the user
+    //     RateLimiter::hit($this->throttleKey($request), 1);
+
+    //     return response()->json([
+    //         'status' => false,
+    //         'message' => 'Invalid pin code',
+    //         'data' => null
+
+    //     ], 401);
+    // }
+
+    // // Reset the login attempts for the user
+    // RateLimiter::clear($this->throttleKey($request));
+
+    // $token = JWTAuth::fromUser($user);
+
+    // return response()->json([
+    //     'status' => True,
+    //     'message' => 'User successfully logged in',
+    //     'data' => [
+    //         'token' => $token,
+    //          'user' => $user,
+    //     ],
+    //     'errors'=>null
+    // ],200);
+
+
     $request->validate([
         'phone_number' => ['required'],
         'password' => ['required'],
-        'pin_code' => ['required', 'digits:5'],
     ]);
 
     $credentials = $request->only('phone_number', 'password');
-    if (!Auth::attempt($credentials)) {
-        // Increase the login attempts for the user
-        RateLimiter::hit($this->throttleKey($request), 1);
+    if (Auth::attempt($credentials)) {
+        $user = Auth::user();
+
+        if (!$user->mobile_verified_at) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Mobile number not verified',
+                'data' => null,
+                'errors' => True,
+            ], 401);
+        }
+
+        if (!$user->pin_code) {
+                return response()->json([
+                    'status' => false,
+                    'message' => 'You should set your pin',
+                    'data' => null,
+                    'errors' => True,
+                ], 401);
+
+        }
+
+        // Reset the login attempts for the user
+        RateLimiter::clear($this->throttleKey($request));
+
+        // Update the user's last login timestamp
+        $user->last_login_at = now();
+        $user->save();
+
+        $token = JWTAuth::fromUser($user);
 
         return response()->json([
+            'status' => True,
+            'message' => 'user login successfully',
+            'data' => [
+                'token' => $token,
+                 'user' => $user,
+            ],
+            'errors' => null,
+
+        ]);
+    } else {
+        $this->incrementLoginAttempts($request);
+        return response()->json([
             'status' => false,
+            'data' => null,
             'message' => 'Invalid phone number or password',
-            'data' => null
+            'errors' => True,
         ], 401);
     }
+}
+
+public function loginByPin(Request $request)
+{
+    $request->validate([
+        'pin_code' => ['required'],
+    ]);
 
     $user = Auth::user();
-    if (!password_verify($request->input('pin_code'), $user->pin_code)) {
-        // Increase the login attempts for the user
-        RateLimiter::hit($this->throttleKey($request), 1);
+
+    // Check if the pin code matches the user's pin code
+    if (Hash::check($request->pin_code, $user->pin_code)) {
+        // Reset the login attempts for the user
+        RateLimiter::clear($this->throttleKey($request));
+
+        return response()->json([
+            'status' => True,
+            'message' => 'User login successfully.',
+            'data' => [
+                'token' => JWTAuth::fromUser($user),
+                'user' => $user,
+            ],
+            'errors' => null
+        ]);
+    } else {
+        // Increment the login attempts for the user
+        RateLimiter::hit($this->throttleKey($request));
 
         return response()->json([
             'status' => false,
-            'message' => 'Invalid pin code',
-            'data' => null
-        ], 401);
+            'message' => 'Invalid pin code.',
+            'data' =>null,
+            'errors' => True
+        ], 422);
     }
-
-    // Reset the login attempts for the user
-    RateLimiter::clear($this->throttleKey($request));
-
-    $token = JWTAuth::fromUser($user);
-
-    return response()->json([
-        'status' => True,
-        'message' => 'User successfully logged in',
-        'data' => [
-            'token' => $token,
-             'user' => $user,
-        ]
-    ],200);
 }
 
     protected function throttleKey(Request $request)
@@ -121,7 +229,8 @@ public function logout(Request $request)
     return response()->json([
         'status' => True,
         'message' => 'User logged out successfully.',
-        'data' => null
+        'data' => null,
+        'errors' => null
     ]);
 }
 
@@ -174,8 +283,13 @@ public function verifyOtp(Request $request)
     $token = JWTAuth::fromUser($user);
 
     return response()->json([
-        'token' => $token,
-        'user' => $user,
+        'status' => True,
+        'message' => "Mobile verified successfully",
+        'data' => [
+            'token' => $token,
+            'user' => $user,
+        ],
+        'errors' => null
     ]);
 }
 
