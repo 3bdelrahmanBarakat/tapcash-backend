@@ -37,7 +37,11 @@ class User extends Authenticatable implements JWTSubject
         'password',
         'first_name',
         'last_name',
-        'pin_code'
+        'pin_code',
+        'enabled',
+        'type',
+        'parent_id',
+
     ];
 
     /**
@@ -65,8 +69,14 @@ class User extends Authenticatable implements JWTSubject
         'email_verified_at' => 'datetime',
     ];
 
-    public function user()
+    public function balance()
     {
         return $this->hasOne(Balance::class);
     }
+
+    public function smartCards()
+    {
+        return $this->hasMany(SmartCard::class);
+    }
+
 }
