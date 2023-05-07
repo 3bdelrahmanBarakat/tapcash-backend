@@ -18,17 +18,18 @@ class PayController extends Controller
     $request->validate([
         'type' => ['required', Rule::in(['product', 'service'])],
         'id' => ['required', 'integer'],
-        // 'name' => ['required', 'string'],
-        // 'price' => ['required', 'numeric'],
-        // 'category' => ['required_if:type,product', 'string'],
-        // 'service_name' => ['required_if:type,service', 'string'],
-        // 'status' => ['required_if:type,service', 'string'],
     ]);
 
     // Check if the user has sufficient balance
     $user = Auth::user();
     if ($request->type === 'product') {
-        $product = Product::findOrFail($request->id);
+        $product = Product::find($request->id);
+
+        if(!$product)
+        {
+            return response()->json(['message' => 'Product not found.'], 400);
+        }
+
         $price = $product->price;
         $name = $product->name;
 
