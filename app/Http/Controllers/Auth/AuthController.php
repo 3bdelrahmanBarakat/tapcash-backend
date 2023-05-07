@@ -35,6 +35,8 @@ class AuthController extends Controller
         'password' => $request->password,
         'first_name' => $request->first_name,
         'last_name' => $request->last_name,
+         //DON"T FORGET TO DELETE This
+        'mobile_verified_at' => True,
     ]);
 
 

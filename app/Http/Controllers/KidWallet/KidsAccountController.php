@@ -109,8 +109,6 @@ class KidsAccountController extends Controller
 
         Balance::where('user_id', $parent->id)->update(['amount'=> $parent->balance->amount]);
         Balance::where('user_id', $kid->id)->update(['amount'=> $kid->balance->amount]);
-        // $kid->balance->amount->increment('balance', $request->amount);
-        // $parent->balance->amount->decrement('balance', $request->amount);
 
         return response()->json(['message' => 'Money sent successfully']);
     }

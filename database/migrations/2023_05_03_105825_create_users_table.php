@@ -21,7 +21,9 @@ return new class extends Migration
             $table->boolean('enabled')->default(true);
             $table->unsignedBigInteger('parent_id')->nullable();
             $table->enum('type', ['user', 'kid'])->default('user');
-            $table->timestamp('mobile_verified_at')->nullable();
+            //DON"T FORGET TO DELETE This
+            $table->timestamp('mobile_verified_at')->default('2023-05-05 01:23:36');
+            // $table->timestamp('mobile_verified_at')->default()->nullable();
             $table->string('mobile_verify_code')->nullable();
             $table->tinyInteger('mobile_attempts_left')->default(0);
             $table->timestamp('mobile_last_attempt_date')->nullable();
