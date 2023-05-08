@@ -26,7 +26,7 @@ class KidsAccountController extends Controller
             'first_name' => $request->first_name,
             'last_name' => $parent->first_name,
             'phone_number' => $request->phone_number,
-            'password' => Hash::make($request->password),
+            'password' => $request->password,
             'type' => "kid",
             'parent_id' => $parent->id,
         ]);

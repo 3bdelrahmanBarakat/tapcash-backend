@@ -38,15 +38,19 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/login/pin',[AuthController::class, 'loginByPin']);
     Route::get('/dashboard', [DashboardController::class, 'index']);
     Route::post('/pay', [PayController::class, 'pay']);
-    Route::post('/add-money', [AddMoneyController::class, 'addMoney']);
-    Route::post('/transfer-money', [TransferMoneyController::class, 'transfer']);
-    Route::get('/view-smart-card', [SmartCardController::class, 'viewSmartCard']);
-    Route::post('/generate-smart-card', [SmartCardController::class, 'generateSmartCard']);
-    Route::post('/pay-by-card', [SmartCardController::class, 'processTransaction']);
-    Route::post('/create-kid-account', [KidsAccountController::class, 'create']);
-    Route::post('/enable-disable-kid-account', [KidsAccountController::class, 'enableOrDisable']);
-    Route::post('/send-kid-money', [KidsAccountController::class, 'sendMoney']);
-    Route::post('/select-forbidden-products', [KidsAccountController::class, 'selectForbiddenProducts']);
-    Route::post('/delete-forbidden-products', [KidsAccountController::class, 'deleteForbiddenProducts']);
+    Route::middleware('checkkid')->group(function () {
+
+        Route::post('/add-money', [AddMoneyController::class, 'addMoney']);
+        Route::post('/transfer-money', [TransferMoneyController::class, 'transfer']);
+        Route::get('/view-smart-card', [SmartCardController::class, 'viewSmartCard']);
+        Route::post('/generate-smart-card', [SmartCardController::class, 'generateSmartCard']);
+        Route::post('/pay-by-card', [SmartCardController::class, 'processTransaction']);
+        Route::post('/create-kid-account', [KidsAccountController::class, 'create']);
+        Route::post('/enable-disable-kid-account', [KidsAccountController::class, 'enableOrDisable']);
+        Route::post('/send-kid-money', [KidsAccountController::class, 'sendMoney']);
+        Route::post('/select-forbidden-products', [KidsAccountController::class, 'selectForbiddenProducts']);
+        Route::post('/delete-forbidden-products', [KidsAccountController::class, 'deleteForbiddenProducts']);
+
+    });
 });
 

@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Pay;
 use App\Http\Controllers\Controller;
 use App\Models\Balance;
 use App\Models\Bill;
+use App\Models\ForbiddenProduct;
 use App\Models\Product;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -33,6 +34,13 @@ class PayController extends Controller
         $price = $product->price;
         $name = $product->name;
 
+        $forbiddenProduct = ForbiddenProduct::where('product_id', $request->id)->first();
+
+        if($user->type == "kid" && $forbiddenProduct)
+        {
+            return response()->json(['error' => 'Sorry,this product is forbidden'], 403);
+        }
+
         if ($user->balance->amount < $price) {
             return response()->json(['message' => 'Insufficient balance.'], 400);
         }
@@ -50,6 +58,11 @@ class PayController extends Controller
 
     // Update the bill status if applicable
     else {
+        if($user->type == "kid")
+        {
+            return response()->json(['error' => 'Access denied'], 403);
+        }
+
         $bill = Bill::where('user_id', $user->id)->where('id', $request->id)->first();
 
         if(!$bill){
