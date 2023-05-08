@@ -79,4 +79,9 @@ class User extends Authenticatable implements JWTSubject
         return $this->hasMany(SmartCard::class);
     }
 
+    public function forbidden_products()
+    {
+        return $this->hasMany(ForbiddenProduct::class);
+    }
+
 }

@@ -4,6 +4,7 @@ namespace App\Http\Controllers\KidWallet;
 
 use App\Http\Controllers\Controller;
 use App\Models\Balance;
+use App\Models\ForbiddenProduct;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -111,5 +112,57 @@ class KidsAccountController extends Controller
         Balance::where('user_id', $kid->id)->update(['amount'=> $kid->balance->amount]);
 
         return response()->json(['message' => 'Money sent successfully']);
+    }
+
+    public function selectForbiddenProducts(Request $request)
+    {
+        $request->validate([
+            'product_ids' => 'required|array|unique:forbidden_products,product_id',
+            'kid_id' => 'required|integer',
+        ]);
+
+        $kid_wallet = User::find($request->kid_id);
+
+        if (!$kid_wallet) {
+            return response()->json(['message' => 'Kid wallet not found'], 404);
+        }
+
+        if ($kid_wallet->is_disabled) {
+            return response()->json(['message' => 'Kid wallet is disabled'], 403);
+        }
+
+        foreach ($request->product_ids as $product_id) {
+            ForbiddenProduct::create([
+                'product_id' => $product_id,
+                'kid_id' => $kid_wallet->id,
+            ]);
+        }
+
+
+        return response()->json(['message' => 'Forbidden products updated successfully']);
+    }
+
+    public function deleteForbiddenProducts(Request $request)
+    {
+        $request->validate([
+            'product_ids' => 'required|array|exists:forbidden_products,product_id',
+            'kid_id' => 'required|integer',
+        ]);
+
+        $kid_wallet = User::find($request->kid_id);
+
+        if (!$kid_wallet) {
+            return response()->json(['message' => 'Kid wallet not found'], 404);
+        }
+
+        if ($kid_wallet->is_disabled) {
+            return response()->json(['message' => 'Kid wallet is disabled'], 403);
+        }
+
+        foreach ($request->product_ids as $product_id) {
+            ForbiddenProduct::where('product_id' , $product_id)->where('kid_id' , $kid_wallet->id)->delete();
+        }
+
+        return response()->json(['message' => 'Forbidden products deleted successfully']);
     }
 }
