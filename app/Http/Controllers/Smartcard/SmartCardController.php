@@ -11,6 +11,25 @@ use Carbon\Carbon;
 
 class SmartCardController extends Controller
 {
+public function viewSmartCard()
+{
+    $smartCard= SmartCard::where('user_id',Auth::user()->id)->first();
+
+    if (!$smartCard) {
+        return response()->json(['message' => 'Card is not found.'], 400);
+    }
+    
+    if ($smartCard->validity_date < Carbon::now()) {
+        $smartCard->status = 'expired';
+        $smartCard->save();
+        return response()->json(['message' => 'Temporary credit card has expired.'], 400);
+    }
+
+    return response()->json([
+        'message' => 'Temporary credit card data.',
+        'data' => $smartCard
+    ]);
+}
 
 public function generateSmartCard(Request $request)
 {

@@ -40,6 +40,7 @@ Route::middleware('auth:api')->group(function () {
     Route::post('/pay', [PayController::class, 'pay']);
     Route::post('/add-money', [AddMoneyController::class, 'addMoney']);
     Route::post('/transfer-money', [TransferMoneyController::class, 'transfer']);
+    Route::get('/view-smart-card', [SmartCardController::class, 'viewSmartCard']);
     Route::post('/generate-smart-card', [SmartCardController::class, 'generateSmartCard']);
     Route::post('/pay-by-card', [SmartCardController::class, 'processTransaction']);
     Route::post('/create-kid-account', [KidsAccountController::class, 'create']);
