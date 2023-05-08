@@ -18,7 +18,7 @@ public function viewSmartCard()
     if (!$smartCard) {
         return response()->json(['message' => 'Card is not found.'], 400);
     }
-    
+
     if ($smartCard->validity_date < Carbon::now()) {
         $smartCard->status = 'expired';
         $smartCard->save();
@@ -27,7 +27,13 @@ public function viewSmartCard()
 
     return response()->json([
         'message' => 'Temporary credit card data.',
-        'data' => $smartCard
+        'data' =>[
+            'card_number' => $smartCard->card_number,
+            'validity_date' => $smartCard->validity_date,
+            'card_holder' => $smartCard->user->first_name." ".$smartCard->user->last_name,
+            'cvv' => $smartCard->cvv,
+            'status' => $smartCard->status,
+        ]
     ]);
 }
 

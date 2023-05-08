@@ -15,9 +15,9 @@ class KidsAccountController extends Controller
     public function create(Request $request)
     {
         $request->validate([
-            'first_name' => 'required',
-            'phone_number' => 'required|unique:users',
-            'password' => 'required',
+            'phone_number' => ['required', 'unique:users' , 'min:13', 'max:13'],
+            'password' => ['required', 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9])/'],
+            'first_name' => ['required','string'],
         ]);
 
         $parent = Auth::user();
@@ -130,7 +130,7 @@ class KidsAccountController extends Controller
         if ($kid_wallet->is_disabled) {
             return response()->json(['message' => 'Kid wallet is disabled'], 403);
         }
-
+        //Don't forget to sync
         foreach ($request->product_ids as $product_id) {
             ForbiddenProduct::create([
                 'product_id' => $product_id,
