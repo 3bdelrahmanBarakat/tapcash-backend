@@ -3,6 +3,11 @@
 namespace App\Http\Controllers\KidWallet;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Kids\CreateKidAccountRequest;
+use App\Http\Requests\Kids\DeleteForbiddenProductsRequest;
+use App\Http\Requests\Kids\EnableOrDisableKidAccountRequest;
+use App\Http\Requests\Kids\SelectForbiddenProductsRequest;
+use App\Http\Requests\Kids\SendKidMoneyRequest;
 use App\Models\Balance;
 use App\Models\ForbiddenProduct;
 use App\Models\Transaction;
@@ -13,13 +18,8 @@ use Illuminate\Support\Facades\Hash;
 
 class KidsAccountController extends Controller
 {
-    public function create(Request $request)
+    public function create(CreateKidAccountRequest $request)
     {
-        $request->validate([
-            'phone_number' => ['required', 'unique:users' , 'min:13', 'max:13'],
-            'password' => ['required', 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9])/'],
-            'first_name' => ['required','string'],
-        ]);
 
         $parent = Auth::user();
 
@@ -45,13 +45,10 @@ class KidsAccountController extends Controller
         ]);
     }
 
-    public function enableOrDisable(Request $request)
+    public function enableOrDisable(EnableOrDisableKidAccountRequest $request)
     {
         $parent = Auth::user();
 
-        $request->validate([
-            'kid_id' => 'required'
-        ]);
 
         $kid = User::where('id', $request->kid_id)
         ->where('parent_id',$parent->id)
@@ -80,12 +77,8 @@ class KidsAccountController extends Controller
 
     }
 
-    public function sendMoney(Request $request,)
+    public function sendMoney(SendKidMoneyRequest $request,)
     {
-        $request->validate([
-            'amount' => 'required|numeric|min:0.01|gt:40',
-            'kid_id' => 'required'
-        ]);
 
         $parent = Auth::user();
 
@@ -112,15 +105,17 @@ class KidsAccountController extends Controller
 
         Balance::where('user_id', $parent->id)->update(['amount'=> $parent->balance->amount]);
         Balance::where('user_id', $kid->id)->update(['amount'=> $kid->balance->amount]);
-        
+
         Transaction::insert([
             [
-            'user_id' => $parent->id,
+            'sender_id' => $parent->id,
+            'receiver' => $kid->id,
             'amount' => $request->amount,
             'type' => 'send'
             ],
         [
-            'user_id' => $kid->id,
+            'sender_id' => $parent->id,
+            'receiver' => $kid->id,
             'amount' => $request->amount,
             'type' => 'receive'
         ]
@@ -128,12 +123,8 @@ class KidsAccountController extends Controller
         return response()->json(['message' => 'Money sent successfully']);
     }
 
-    public function selectForbiddenProducts(Request $request)
+    public function selectForbiddenProducts(SelectForbiddenProductsRequest $request)
     {
-        $request->validate([
-            'product_ids' => 'required|array|unique:forbidden_products,product_id',
-            'kid_id' => 'required|integer',
-        ]);
 
         $kid_wallet = User::find($request->kid_id);
 
@@ -144,10 +135,10 @@ class KidsAccountController extends Controller
         if ($kid_wallet->is_disabled) {
             return response()->json(['message' => 'Kid wallet is disabled'], 403);
         }
-        //Don't forget to sync
-        foreach ($request->product_ids as $product_id) {
+
+        foreach ($request->products_category as $product_category) {
             ForbiddenProduct::create([
-                'product_id' => $product_id,
+                'product_category' => $product_category,
                 'kid_id' => $kid_wallet->id,
             ]);
         }
@@ -156,12 +147,8 @@ class KidsAccountController extends Controller
         return response()->json(['message' => 'Forbidden products updated successfully']);
     }
 
-    public function deleteForbiddenProducts(Request $request)
+    public function deleteForbiddenProducts(DeleteForbiddenProductsRequest $request)
     {
-        $request->validate([
-            'product_ids' => 'required|array|exists:forbidden_products,product_id',
-            'kid_id' => 'required|integer',
-        ]);
 
         $kid_wallet = User::find($request->kid_id);
 
@@ -173,8 +160,8 @@ class KidsAccountController extends Controller
             return response()->json(['message' => 'Kid wallet is disabled'], 403);
         }
 
-        foreach ($request->product_ids as $product_id) {
-            ForbiddenProduct::where('product_id' , $product_id)->where('kid_id' , $kid_wallet->id)->delete();
+        foreach ($request->products_category as $product_category) {
+            ForbiddenProduct::where('product_category' , $product_category)->where('kid_id' , $kid_wallet->id)->delete();
         }
 
         return response()->json(['message' => 'Forbidden products deleted successfully']);

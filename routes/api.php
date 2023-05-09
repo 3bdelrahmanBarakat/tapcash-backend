@@ -1,6 +1,7 @@
 <?php
 
 use App\Http\Controllers\Auth\AuthController;
+use App\Http\Controllers\Auth\DeleteAccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
 use App\Http\Controllers\Dashboard\DashboardController;
@@ -52,6 +53,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/select-forbidden-products', [KidsAccountController::class, 'selectForbiddenProducts']);
         Route::post('/delete-forbidden-products', [KidsAccountController::class, 'deleteForbiddenProducts']);
         Route::get('/view-transactions', [TransactionsController::class, 'view']);
+        Route::post('/delete-account', [DeleteAccountController::class, 'deleteAccount']);
 
     });
 });

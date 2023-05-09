@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Money;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Money\TransferMoneyRequest;
 use App\Models\Balance;
 use App\Models\Transaction;
 use App\Models\User;
@@ -11,15 +12,12 @@ use Illuminate\Support\Facades\Auth;
 
 class TransferMoneyController extends Controller
 {
-    public function transfer(Request $request)
+    public function transfer(TransferMoneyRequest $request)
     {
-        $request->validate([
-            'phone_number' => 'required|string|min:13|max:13',
-            'amount' => 'required|numeric|min:0.01|gt:40',
-        ]);
-
+        
         $user = Auth::user();
         $balance = $user->balance->amount;
+
 
         // Check if the user has enough balance to transfer
         if ($balance < $request->amount) {
@@ -46,17 +44,22 @@ class TransferMoneyController extends Controller
 
         Transaction::insert([
             [
-            'user_id' => $user->id,
+            'sender_id' => $user->id,
+            'receiver_id' => $recipient->id,
             'amount' => $request->amount,
             'type' => 'send'
             ],
         [
-            'user_id' => $recipient->id,
+            'sender_id' => $user->id,
+            'receiver_id' => $recipient->id,
             'amount' => $request->amount,
             'type' => 'receive'
         ]
         ]);
 
-        return response()->json(['message' => 'Transfer successful.']);
+        return response()->json([
+            'message' => 'Transfer successful.',
+            'balance' => $user->balance->amount
+        ]);
     }
 }

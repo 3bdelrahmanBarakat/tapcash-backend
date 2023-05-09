@@ -9,7 +9,7 @@ class ForbiddenProduct extends Model
 {
     use HasFactory;
     protected $table = "forbidden_products";
-    protected $fillable = ['kid_id', 'parent_id', 'product_id'];
+    protected $fillable = ['kid_id', 'parent_id', 'product_category'];
 
     public function user()
     {

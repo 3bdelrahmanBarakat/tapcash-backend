@@ -3,6 +3,12 @@
 namespace App\Http\Controllers\Auth;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Auth\LoginByPinRequest;
+use App\Http\Requests\Auth\LoginRequest;
+use App\Http\Requests\Auth\RegisterRequest;
+use App\Http\Requests\Auth\SavePinCodeRequest;
+use App\Http\Requests\Auth\SendOtpRequest;
+use App\Http\Requests\Auth\VerifyOtpRequest;
 use App\Models\Balance;
 use App\Models\User;
 use Illuminate\Http\Request;
@@ -11,7 +17,6 @@ use Illuminate\Support\Facades\Cache;
 use Illuminate\Support\Facades\RateLimiter;
 use Carbon\Carbon;
 use Illuminate\Support\Facades\Hash;
-use Illuminate\Support\Facades\Validator;
 use Tymon\JWTAuth\Facades\JWTAuth;
 use Illuminate\Support\Str;
 use Illuminate\Validation\ValidationException;
@@ -21,20 +26,15 @@ use Vonage\SMS\Message\SMS;
 
 class AuthController extends Controller
 {
-    public function register(Request $request)
+    public function register(RegisterRequest $request)
 {
-    $request->validate([
-        'phone_number' => ['required', 'unique:users' , 'min:13', 'max:13'],
-        'password' => ['required', 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9])/'],
-        'first_name' => ['required','string'],
-        'last_name' => ['required','string'],
-    ]);
 
     $user = User::create([
         'phone_number' => $request->phone_number,
         'password' => $request->password,
         'first_name' => $request->first_name,
         'last_name' => $request->last_name,
+        // 'type' => $request->type,
          //DON"T FORGET TO DELETE This
         'mobile_verified_at' => True,
     ]);
@@ -55,12 +55,8 @@ class AuthController extends Controller
     ], 201);
 }
 
-public function savePinCode(Request $request)
+public function savePinCode(SavePinCodeRequest $request)
 {
-    $request->validate([
-        'pin_code' => ['required', 'digits:6' ,'numeric'],
-        'user_id' => 'required',
-    ]);
 
 
     $user = User::findOrFail($request->user_id);
@@ -91,60 +87,8 @@ protected function incrementLoginAttempts(Request $request)
         $this->incrementLoginAttempts($request);
     }
 
-public function login(Request $request)
+public function login(LoginRequest $request)
 {
-    // $request->validate([
-    //     'phone_number' => ['required'],
-    //     'password' => ['required'],
-    //     'pin_code' => ['required', 'digits:5'],
-    // ]);
-
-    // $credentials = $request->only('phone_number', 'password');
-    // if (!Auth::attempt($credentials)) {
-    //     // Increase the login attempts for the user
-    //     RateLimiter::hit($this->throttleKey($request), 1);
-
-    //     return response()->json([
-    //         'status' => false,
-    //         'message' => 'Invalid phone number or password',
-    //         'data' => null
-    //     ], 401);
-    // }
-
-    // $user = Auth::user();
-    // if (!password_verify($request->input('pin_code'), $user->pin_code)) {
-    //     // Increase the login attempts for the user
-    //     RateLimiter::hit($this->throttleKey($request), 1);
-
-    //     return response()->json([
-    //         'status' => false,
-    //         'message' => 'Invalid pin code',
-    //         'data' => null
-
-    //     ], 401);
-    // }
-
-    // // Reset the login attempts for the user
-    // RateLimiter::clear($this->throttleKey($request));
-
-    // $token = JWTAuth::fromUser($user);
-
-    // return response()->json([
-    //     'status' => True,
-    //     'message' => 'User successfully logged in',
-    //     'data' => [
-    //         'token' => $token,
-    //          'user' => $user,
-    //     ],
-    //     'errors'=>null
-    // ],200);
-
-
-    $request->validate([
-        'phone_number' => ['required', 'min:13'],
-        'password' => ['required', 'min:4'],
-    ]);
-
 
     $credentials = $request->only('phone_number', 'password');
     if (Auth::attempt($credentials)) {
@@ -202,11 +146,8 @@ public function login(Request $request)
     }
 }
 
-public function loginByPin(Request $request)
+public function loginByPin(LoginByPinRequest $request)
 {
-    $request->validate([
-        'pin_code' => ['required'],
-    ]);
 
     $user = Auth::user();
 
@@ -243,7 +184,7 @@ public function loginByPin(Request $request)
     return Str::lower($request->input('phone_number')) . '|' . $request->ip();
 }
 
-public function logout(Request $request)
+public function logout()
 {
     Auth::logout();
 
@@ -256,11 +197,9 @@ public function logout(Request $request)
     ]);
 }
 
-public function sendOtp(Request $request)
+public function sendOtp(SendOtpRequest $request)
 {
-$request->validate([
-'phone_number' => ['required',  'min:13', 'max:13'],
-]);
+
 $otp = Str::random(6);
     $message = "Your verification code is: {$otp}";
 
@@ -278,12 +217,8 @@ $otp = Str::random(6);
     ]);
 }
 
-public function verifyOtp(Request $request)
+public function verifyOtp(VerifyOtpRequest $request)
 {
-    $request->validate([
-        'phone_number' => ['required'],
-        'otp' => ['required'],
-    ]);
 
     $otp = Cache::get($this->otpKey($request));
 

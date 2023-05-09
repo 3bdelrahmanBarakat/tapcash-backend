@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\Pay;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\Pay\PayRequest;
 use App\Models\Balance;
 use App\Models\Bill;
 use App\Models\ForbiddenProduct;
@@ -14,13 +15,8 @@ use Illuminate\Validation\Rule;
 
 class PayController extends Controller
 {
-    public function pay(Request $request)
+    public function pay(PayRequest $request)
 {
-    // Validate the user input
-    $request->validate([
-        'type' => ['required', Rule::in(['product', 'service'])],
-        'id' => ['required', 'integer'],
-    ]);
 
     // Check if the user has sufficient balance
     $user = Auth::user();
@@ -35,7 +31,7 @@ class PayController extends Controller
         $price = $product->price;
         $name = $product->name;
 
-        $forbiddenProduct = ForbiddenProduct::where('product_id', $request->id)->first();
+        $forbiddenProduct = ForbiddenProduct::where('product_category', $product->category)->first();
 
         if($user->type == "kid" && $forbiddenProduct)
         {
@@ -50,7 +46,8 @@ class PayController extends Controller
         Balance::where('user_id', $user->id)->update(['amount'=> $user->balance->amount]);
 
         Transaction::create([
-            'user_id' => $user->id,
+            //sender_id is a user_id
+            'sender_id' => $user->id,
             'product_id' => $product->id,
             'amount' => $product->price,
             'type' => 'pay'
@@ -95,7 +92,8 @@ class PayController extends Controller
         $bill->save();
 
         Transaction::create([
-            'user_id' => $user->id,
+            //sender_id is a user_id
+            'sender_id' => $user->id,
             'bill_id' => $bill->id,
             'amount' => $bill->price,
             'type' => 'pay'

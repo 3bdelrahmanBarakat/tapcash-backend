@@ -20,7 +20,7 @@ return new class extends Migration
             $table->string('last_name');
             $table->boolean('enabled')->default(true);
             $table->unsignedBigInteger('parent_id')->nullable();
-            $table->enum('type', ['user', 'kid'])->default('user');
+            $table->enum('type', ['user', 'kid','company'])->default('user');
             //DON"T FORGET TO DELETE This
             $table->timestamp('mobile_verified_at')->default('2023-05-05 01:23:36');
             // $table->timestamp('mobile_verified_at')->default()->nullable();

@@ -12,10 +12,10 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('forbidden_products', function (Blueprint $table) {
-            $table->unsignedBigInteger('product_id');
+            $table->id();
+            $table->string('product_category');
             $table->unsignedBigInteger('kid_id');
 
-            $table->foreign('product_id')->references('id')->on('products')->onDelete('cascade');
             $table->foreign('kid_id')->references('id')->on('users')->onDelete('cascade');
             $table->timestamps();
         });

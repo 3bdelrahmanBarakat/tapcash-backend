@@ -3,8 +3,10 @@
 namespace App\Http\Controllers\Smartcard;
 
 use App\Http\Controllers\Controller;
+use App\Http\Requests\SmartCard\ProcessTransactionRequest;
 use App\Models\Balance;
 use App\Models\SmartCard;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
@@ -73,16 +75,10 @@ public function generateSmartCard(Request $request)
     ]);
 }
 
-public function processTransaction(Request $request)
+public function processTransaction(ProcessTransactionRequest $request)
 {
     $user = Auth::user();
-    $request->validate([
-        'card_number' => 'required|digits:16',
-        'validity_date' => 'required',
-        'cvv' => 'required|digits:3',
-        'amount' => 'required|numeric|min:0.01|gt:40',
-    ]);
-    // return Hash::check($user->smartCards->card_number,$request->card_number);
+    
 
     $smartCard = SmartCard::where('card_number', Hash::check($user->smartCards->card_number,$request->card_number))
         ->where('validity_date', $request->validity_date)
@@ -111,6 +107,13 @@ public function processTransaction(Request $request)
     Balance::where('user_id', $user->id)->update(['amount'=> $user->balance->amount]);
 
     $smartCard->save();
+
+    Transaction::create([
+        //sender_id is a user_id
+        'sender_id' => $user->id,
+        'amount' => $request->amount,
+        'type' => 'pay'
+    ]);
 
     return response()->json([
         'message' => 'Transaction successful.',
