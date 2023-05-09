@@ -9,6 +9,7 @@ use App\Http\Controllers\Money\AddMoneyController;
 use App\Http\Controllers\Money\TransferMoneyController;
 use App\Http\Controllers\Pay\PayController;
 use App\Http\Controllers\Smartcard\SmartCardController;
+use App\Http\Controllers\Transactions\TransactionsController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
@@ -50,6 +51,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/send-kid-money', [KidsAccountController::class, 'sendMoney']);
         Route::post('/select-forbidden-products', [KidsAccountController::class, 'selectForbiddenProducts']);
         Route::post('/delete-forbidden-products', [KidsAccountController::class, 'deleteForbiddenProducts']);
+        Route::get('/view-transactions', [TransactionsController::class, 'view']);
 
     });
 });

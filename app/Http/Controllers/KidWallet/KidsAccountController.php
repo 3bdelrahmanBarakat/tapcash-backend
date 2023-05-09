@@ -5,6 +5,7 @@ namespace App\Http\Controllers\KidWallet;
 use App\Http\Controllers\Controller;
 use App\Models\Balance;
 use App\Models\ForbiddenProduct;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -36,6 +37,7 @@ class KidsAccountController extends Controller
         Balance::create([
             'user_id' => $kid->id,
         ]);
+
 
         return response()->json([
             'message' => 'Kid account created successfully.',
@@ -110,7 +112,19 @@ class KidsAccountController extends Controller
 
         Balance::where('user_id', $parent->id)->update(['amount'=> $parent->balance->amount]);
         Balance::where('user_id', $kid->id)->update(['amount'=> $kid->balance->amount]);
-
+        
+        Transaction::insert([
+            [
+            'user_id' => $parent->id,
+            'amount' => $request->amount,
+            'type' => 'send'
+            ],
+        [
+            'user_id' => $kid->id,
+            'amount' => $request->amount,
+            'type' => 'receive'
+        ]
+        ]);
         return response()->json(['message' => 'Money sent successfully']);
     }
 

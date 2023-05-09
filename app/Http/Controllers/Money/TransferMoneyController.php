@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Money;
 
 use App\Http\Controllers\Controller;
 use App\Models\Balance;
+use App\Models\Transaction;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
@@ -42,6 +43,19 @@ class TransferMoneyController extends Controller
         // Add the transferred amount to the recipient's balance
         $recipient->balance->amount += $request->amount;
         Balance::where('user_id', $recipient->id)->update(['amount'=> $recipient->balance->amount]);
+
+        Transaction::insert([
+            [
+            'user_id' => $user->id,
+            'amount' => $request->amount,
+            'type' => 'send'
+            ],
+        [
+            'user_id' => $recipient->id,
+            'amount' => $request->amount,
+            'type' => 'receive'
+        ]
+        ]);
 
         return response()->json(['message' => 'Transfer successful.']);
     }

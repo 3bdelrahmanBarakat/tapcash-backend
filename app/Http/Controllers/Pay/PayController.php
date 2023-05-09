@@ -7,6 +7,7 @@ use App\Models\Balance;
 use App\Models\Bill;
 use App\Models\ForbiddenProduct;
 use App\Models\Product;
+use App\Models\Transaction;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Validation\Rule;
@@ -48,6 +49,13 @@ class PayController extends Controller
         $user->balance->amount -= $price;
         Balance::where('user_id', $user->id)->update(['amount'=> $user->balance->amount]);
 
+        Transaction::create([
+            'user_id' => $user->id,
+            'product_id' => $product->id,
+            'amount' => $product->price,
+            'type' => 'pay'
+        ]);
+
         return response()->json([
             'message' => 'Product purchased successfully.',
             'name' => $name,
@@ -85,6 +93,13 @@ class PayController extends Controller
 
         $bill->status = 'paid';
         $bill->save();
+
+        Transaction::create([
+            'user_id' => $user->id,
+            'bill_id' => $bill->id,
+            'amount' => $bill->price,
+            'type' => 'pay'
+        ]);
 
         return response()->json([
             'message' => 'Bill paid successfully.',

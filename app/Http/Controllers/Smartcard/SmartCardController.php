@@ -8,6 +8,7 @@ use App\Models\SmartCard;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Carbon\Carbon;
+use Illuminate\Support\Facades\Hash;
 
 class SmartCardController extends Controller
 {
@@ -28,7 +29,7 @@ public function viewSmartCard()
     return response()->json([
         'message' => 'Temporary credit card data.',
         'data' =>[
-            'card_number' => $smartCard->card_number,
+            'card_number' => decrypt($smartCard->card_number),
             'validity_date' => $smartCard->validity_date,
             'card_holder' => $smartCard->user->first_name." ".$smartCard->user->last_name,
             'cvv' => $smartCard->cvv,
@@ -55,7 +56,7 @@ public function generateSmartCard(Request $request)
 
     $smartCard = new SmartCard([
         'user_id' => $user->id,
-        'card_number' =>  $cardNumber,
+        'card_number' => encrypt($cardNumber),
         'validity_date' => $validity_date,
         'cvv' => $cvv,
         'status' => 'active',
@@ -74,14 +75,16 @@ public function generateSmartCard(Request $request)
 
 public function processTransaction(Request $request)
 {
+    $user = Auth::user();
     $request->validate([
         'card_number' => 'required|digits:16',
         'validity_date' => 'required',
         'cvv' => 'required|digits:3',
         'amount' => 'required|numeric|min:0.01|gt:40',
     ]);
+    // return Hash::check($user->smartCards->card_number,$request->card_number);
 
-    $smartCard = SmartCard::where('card_number', $request->card_number)
+    $smartCard = SmartCard::where('card_number', Hash::check($user->smartCards->card_number,$request->card_number))
         ->where('validity_date', $request->validity_date)
         ->where('cvv', $request->cvv)
         ->where('status', 'active')
@@ -107,7 +110,6 @@ public function processTransaction(Request $request)
     $user->balance->amount -= $request->amount;
     Balance::where('user_id', $user->id)->update(['amount'=> $user->balance->amount]);
 
-    $smartCard->status = 'used';
     $smartCard->save();
 
     return response()->json([
