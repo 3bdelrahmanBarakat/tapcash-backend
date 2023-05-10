@@ -17,7 +17,7 @@ return new class extends Migration
             $table->string('card_number', 255);
             $table->date('validity_date');
             $table->string('cvv', 255);
-            $table->enum('status', ['active', 'used'])->default('active');
+            $table->enum('status', ['active', 'expired'])->default('active');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
