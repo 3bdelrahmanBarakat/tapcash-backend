@@ -1,10 +1,10 @@
 <?php
 
-namespace App\Http\Requests\Auth;
+namespace App\Http\Requests\Company;
 
 use Illuminate\Foundation\Http\FormRequest;
 
-class RegisterRequest extends FormRequest
+class AddEmployeesRequest extends FormRequest
 {
     /**
      * Determine if the user is authorized to make this request.
@@ -22,11 +22,10 @@ class RegisterRequest extends FormRequest
     public function rules(): array
     {
         return [
-            'phone_number' => ['required', 'unique:users' , 'min:11', 'max:11'],
-            'password' => ['required', 'min:8', 'regex:/^(?=.*[a-zA-Z])(?=.*[0-9])/'],
-            'first_name' => ['required','string'],
-            'last_name' => ['required','string'],
-            'type' => ['required','string'],
+            'employees.*company_id' => 'required|string',
+            'employees.*phone_number' => 'required|string|exists:users,phone_number|min:11|max:11',
+            'employees.*position' => 'required|string|min:1',
+            'employees.*salary' => 'required|string|gt:30',
         ];
     }
 }

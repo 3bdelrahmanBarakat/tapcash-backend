@@ -4,6 +4,7 @@ use App\Http\Controllers\Auth\AuthController;
 use App\Http\Controllers\Auth\DeleteAccountController;
 use App\Http\Controllers\Auth\LoginController;
 use App\Http\Controllers\Auth\RegisterController;
+use App\Http\Controllers\Company\EmployeeController;
 use App\Http\Controllers\Dashboard\DashboardController;
 use App\Http\Controllers\KidWallet\KidsAccountController;
 use App\Http\Controllers\Money\AddMoneyController;
@@ -55,6 +56,11 @@ Route::middleware('auth:api')->group(function () {
         Route::get('/view-transactions', [TransactionsController::class, 'view']);
         Route::post('/delete-account', [DeleteAccountController::class, 'deleteAccount']);
 
+            Route::middleware('company')->group(function () {
+                Route::post('/add-employee', [EmployeeController::class, 'addEmployees']);
+                Route::post('/pay-salaries', [EmployeeController::class, 'paySalaries']);
+                Route::get('/show-employee', [EmployeeController::class, 'showEmployees']);
+            });
     });
 });
 
