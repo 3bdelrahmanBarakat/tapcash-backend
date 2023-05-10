@@ -21,7 +21,7 @@ class TransactionsController extends Controller
     })
     ->orWhere(function ($query) use ($user_id) {
         $query->where('sender_id', $user_id)
-            ->whereIn('type', ['add_money', 'pay']);
+            ->whereIn('type', ['add', 'pay']);
     })
     ->distinct()
     ->get();
