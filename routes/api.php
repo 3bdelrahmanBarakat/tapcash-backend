@@ -49,6 +49,7 @@ Route::middleware('auth:api')->group(function () {
         Route::post('/generate-smart-card', [SmartCardController::class, 'generateSmartCard']);
         Route::post('/pay-by-card', [SmartCardController::class, 'processTransaction']);
         Route::post('/create-kid-account', [KidsAccountController::class, 'create']);
+        Route::get('/view-kids', [KidsAccountController::class, 'viewKids']);
         Route::post('/enable-disable-kid-account', [KidsAccountController::class, 'enableOrDisable']);
         Route::post('/send-kid-money', [KidsAccountController::class, 'sendMoney']);
         Route::post('/select-forbidden-products', [KidsAccountController::class, 'selectForbiddenProducts']);

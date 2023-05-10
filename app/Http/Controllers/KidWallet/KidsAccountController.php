@@ -166,4 +166,13 @@ class KidsAccountController extends Controller
 
         return response()->json(['message' => 'Forbidden products deleted successfully']);
     }
+
+    public function viewKids()
+    {
+        $kids = User::with('balance')->where('parent_id', Auth::user()->id)->get();
+        if(!$kids){
+            return response()->json(['message' => 'There are no kids in your account'], 404);
+        }
+        return response()->json(['kids' => $kids]);
+    }
 }
