@@ -28,6 +28,13 @@ class EmployeeController extends Controller
 
             $employee_id = User::where('phone_number',$employee['phone_number'])->value('id');
 
+            if(!$employee_id)
+            {
+                return response()->json([
+                    'errors' => "This employee with phone number ".$employee['phone_number']." is not found"
+                ], 422);
+            }
+
             if (Employee::where('employee_id',$employee_id)->first()) {
                 return response()->json([
                     'errors' => "This employee is already associated"
@@ -44,6 +51,23 @@ class EmployeeController extends Controller
 
         return response()->json(['message' => 'Employees added successfully'], 201);
 
+    }
+
+    public function deleteEmployee(Request $request)
+    {
+        foreach ($request->employees_id as $employee_id)
+        {
+           $employee = Employee::where('employee_id', $employee_id)->delete();
+
+           if(!$employee)
+           {
+            return response()->json([
+                'errors' => "This employee is not found"
+            ], 422);
+           }
+        }
+
+     return response()->json(['message' => 'Employee deleted successfully'], 201);
     }
 
     public function showEmployees()

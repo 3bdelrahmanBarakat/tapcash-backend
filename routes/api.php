@@ -61,6 +61,7 @@ Route::middleware('auth:api')->group(function () {
                 Route::post('/add-employee', [EmployeeController::class, 'addEmployees']);
                 Route::post('/pay-salaries', [EmployeeController::class, 'paySalaries']);
                 Route::get('/show-employee', [EmployeeController::class, 'showEmployees']);
+                Route::post('/delete-employee', [EmployeeController::class, 'deleteEmployee']);
             });
     });
 });
