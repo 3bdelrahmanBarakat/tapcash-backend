@@ -8,6 +8,7 @@ use App\Models\Balance;
 use App\Models\Employee;
 use App\Models\Transaction;
 use App\Models\User;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Validator;
@@ -47,6 +48,8 @@ class EmployeeController extends Controller
                 'position' => $employee['position'],
                 'salary' => $employee['salary'],
             ]);
+
+
         }
 
         return response()->json(['message' => 'Employees added successfully'], 201);
@@ -90,6 +93,13 @@ class EmployeeController extends Controller
 
             $employee = Employee::where('employee_id', $employee_id)->where('company_id', $company->id)->first();
 
+            if(!$employee)
+           {
+            return response()->json([
+                'errors' => "This employee is not found"
+            ], 422);
+           }
+
             $employee_balance = Balance::where('user_id', $employee_id)->first();
           // Check if the company has enough balance to transfer
             if ($balance < $employee->salary) {
@@ -109,13 +119,15 @@ class EmployeeController extends Controller
             'sender_id' => $company->id,
             'receiver_id' => $employee_id,
             'amount' => $employee->salary,
-            'type' => 'send'
+            'type' => 'send',
+            'created_at' =>Carbon::now()
             ],
         [
             'sender_id' => $company->id,
             'receiver_id' => $employee_id,
             'amount' => $employee->salary,
-            'type' => 'receive'
+            'type' => 'receive',
+            'created_at' =>Carbon::now()
         ]
         ]);
     }
