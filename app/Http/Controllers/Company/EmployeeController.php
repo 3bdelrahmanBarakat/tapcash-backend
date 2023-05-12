@@ -88,6 +88,13 @@ class EmployeeController extends Controller
         $company = Auth::user();
         $balance = $company->balance->amount;
 
+        $last_payment = Transaction::where('sender_id', $company->id)->where('type','send')->latest()->first('created_at');
+
+        if ($last_payment && $last_payment->created_at->diffInDays(Carbon::now()) < 30) {
+            return response()->json([
+                'error' => 'You cannot pay salaries before 30 days have passed since the last payment.'
+            ], 400);
+        }
 
         foreach($request['employees_id'] as $employee_id){
 
@@ -134,7 +141,7 @@ class EmployeeController extends Controller
 
         return response()->json([
             'message' => 'Salaries Transfered successfully.',
-            'balance' => $company->balance->amount
+            'balance' => $balance
         ]);
     }
     }
