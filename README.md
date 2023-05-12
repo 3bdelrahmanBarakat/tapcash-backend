@@ -7,60 +7,58 @@
 <a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
 </p>
 
-## About Laravel
+## Get Started
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+Welcome to my backend project guide, you're so close to see my magic :)
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- Please run this command (php artisan db:seed)
+- You can login with one of these accounts based on which type of user you would to login in with:
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+User Account:
+	phone number: 01234567890
+	password: password123
 
-## Learning Laravel
+Kid Account:
+	phone number: 01234567891
+	password: password123
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+Company Account:
+	phone number: 01234567892
+	password: password123
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains over 2000 video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+Horaaay! ENJOY with my magic :)
 
-## Laravel Sponsors
+## Say hello to my project features:
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the Laravel [Patreon page](https://patreon.com/taylorotwell).
+Our project is a comprehensive web & mobile application that provides a variety of financial services and features for users.
+The backend of the application is designed with cutting-edge technologies to ensure maximum performance, scalability,
+and security. Our application offers a wide range of features, including user authentication, smart card generation,
+kids' wallet accounts, employee management for companies, and salary payment.
 
-### Premium Partners
+The user authentication process is designed to ensure the highest level of security for our users. Upon registration,
+users can create an account with their phone number that must be verified by sending OTP SMS to registerd user, PIN code, and password.
+User accounts can also be linked to their parent accounts,allowing for the creation of kid's wallet accounts.
+These accounts enable parents to manage their children's finances, view their transactions, and set spending limits.
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Cubet Techno Labs](https://cubettech.com)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[Many](https://www.many.co.uk)**
-- **[Webdock, Fast VPS Hosting](https://www.webdock.io/en)**
-- **[DevSquad](https://devsquad.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[OP.GG](https://op.gg)**
-- **[WebReinvent](https://webreinvent.com/?utm_source=laravel&utm_medium=github&utm_campaign=patreon-sponsors)**
-- **[Lendio](https://lendio.com)**
+Our smart card generation feature allows authenticated users to generate temporary credit cards with a validity period of 24 hours.
+These cards contain the user's first name, last name, 16 random numbers,and a CVV number.
+Our application ensures the security of these cards by storing their expiration dates and times in the database and disabling them after 24 hours.
 
-## Contributing
+Companies can also benefit from our application's features by creating accounts that enable them to manage their employees and pay salaries.
+Our employee management system allows companies to add employees, assign positions, and set salaries.
+The company user can also view employee information and disable employees when necessary.
+The salary payment feature ensures that the company user can only pay salaries after 30 days have passed since the last payment.
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+Our backend is designed to handle a wide range of transactions, including transferring money,
+receiving money, paying for products & bills, and adding money to accounts.
+We also provide an API that enables our users to access their accounts and perform transactions remotely.
 
-## Code of Conduct
+Overall, our application offers a comprehensive set of financial features that cater to the needs of individuals and companies alike.
+Our backend is designed with the latest technologies and security measures to ensure the highest level of performance and user satisfaction.
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+## License (let's be professional fo a while 😬💼)
+<a href="https://github.com/3bdelrahmanBarakat">have a look at my profile</a>
 
-## Security Vulnerabilities
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
 
-## License
-
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
