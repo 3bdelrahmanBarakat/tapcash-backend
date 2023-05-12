@@ -14,16 +14,16 @@ Welcome to my backend project guide, you're so close to see my magic :)
 - Please run this command (php artisan db:seed)
 - You can login with one of these accounts based on which type of user you would to login in with:
 
-User Account:
-	phone number: 01234567890
+User Account:<br>
+	phone number: 01234567890<br>
 	password: password123
 
-Kid Account:
-	phone number: 01234567891
+Kid Account:<br>
+	phone number: 01234567891<br>
 	password: password123
 
-Company Account:
-	phone number: 01234567892
+Company Account:<br>
+	phone number: 01234567892<br>
 	password: password123
 
 
@@ -57,7 +57,7 @@ We also provide an API that enables our users to access their accounts and perfo
 Overall, our application offers a comprehensive set of financial features that cater to the needs of individuals and companies alike.
 Our backend is designed with the latest technologies and security measures to ensure the highest level of performance and user satisfaction.
 
-## License (let's be professional fo a while 😬💼)
+## License (let's be professional for a while 😬💼)
 <a href="https://github.com/3bdelrahmanBarakat">have a look at my profile</a>
 
 
