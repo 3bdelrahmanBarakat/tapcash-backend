@@ -127,14 +127,14 @@ class EmployeeController extends Controller
             'receiver_id' => $employee_id,
             'amount' => $employee->salary,
             'type' => 'send',
-            'created_at' =>Carbon::now()
+            'created_at' =>now()
             ],
         [
             'sender_id' => $company->id,
             'receiver_id' => $employee_id,
             'amount' => $employee->salary,
             'type' => 'receive',
-            'created_at' =>Carbon::now()
+            'created_at' =>now()
         ]
         ]);
     }
