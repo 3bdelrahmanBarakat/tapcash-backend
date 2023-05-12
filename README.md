@@ -1,4 +1,4 @@
-<p align="center"><img src="<a href="https://ibb.co/4SbPfj8"><img src="https://i.ibb.co/z23G5SX/output-onlinepngtools.png" alt="tapcash" border="0" width="400"></p>
+<p align="center"><img src="https://i.ibb.co/z23G5SX/output-onlinepngtools.png" alt="tapcash" border="0" width="400"></p>
 
 <p align="center">
 <a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
