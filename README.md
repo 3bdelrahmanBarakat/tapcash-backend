@@ -6,7 +6,7 @@
 
 ## Get Started
 
-Welcome to my backend project guide, you're so close to see my magic :)
+Welcome to my backend project guide, you're so close to see my magic 🔮
 
 - Please run this command (php artisan db:seed)
 - You can login with one of these accounts based on which type of user you would to login in with:
@@ -24,7 +24,7 @@ Company Account:<br>
 	password: password123
 
 
-Horaaay! ENJOY with my magic :)
+Horaaay! ENJOY with my magic 🔮
 
 ## Say hello to my project features:
 
