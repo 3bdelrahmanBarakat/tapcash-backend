@@ -26,7 +26,7 @@ Company Account:<br>
 
 Horaaay! ENJOY with my magic 🔮
 
-## Say hello to my project features:
+## Say hello to our project features:
 
 Our project is a comprehensive web & mobile application that provides a variety of financial services and features for users.
 The backend of the application is designed with cutting-edge technologies to ensure maximum performance, scalability,
