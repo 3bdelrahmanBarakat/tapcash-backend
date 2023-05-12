@@ -1,8 +1,8 @@
 <p align="center"><img src="https://i.ibb.co/z23G5SX/output-onlinepngtools.png" alt="tapcash" border="0" width="400"></p>
 
-<p align="center">
-<h3>Code Gamed - TapCash</h3>
-</p>
+
+<h3 align="center">Code Gamed - TapCash</h3>
+
 
 ## Get Started
 
