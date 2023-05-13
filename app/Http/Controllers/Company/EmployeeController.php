@@ -75,7 +75,7 @@ class EmployeeController extends Controller
 
     public function showEmployees()
     {
-      $employees=  Employee::where('company_id', Auth::user()->id)->get();
+      $employees=Employee::with('employee')->where('company_id', Auth::user()->id)->get();
 
         return response()->json
         ([
